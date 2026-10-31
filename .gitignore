@@ -1,0 +1,24 @@
+# Local inputs and emulator outputs
+*.bin
+*.img
+*.raw
+*.qcow2
+*.dump
+*.rom
+*.elf
+*.so
+*.ppm
+*.png
+*.jpg
+*.jpeg
+*.nef
+*.mov
+*.mp4
+*.log
+*.manifest.json
+run/
+runs/
+private/
+.local/
+__pycache__/
+*.py[cod]
