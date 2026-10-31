@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "project": "Nikon Zf QEMU Research Model",
+  "layout": "WonderLantern-style source snapshot",
+  "private_material_policy": "No firmware, dumps, keys, calibration data, run outputs, or research plugins",
+  "upstream_qemu_revision": "055b82d29350367f2036f70793a5aa332cf08936",
+  "source_roots": ["qemu", "tools", "tests", "docs", "LICENSES"],
+  "license": "GPL-2.0-or-later for Zf-authored model sources; retain upstream and third-party licenses",
+  "integration_entrypoint": "qemu/prepare_source.py",
+  "build_entrypoint": "tools/build.py",
+  "privacy_check": "tests/check_release_tree.py"
+}
