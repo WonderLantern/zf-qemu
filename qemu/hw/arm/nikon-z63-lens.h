@@ -85,6 +85,8 @@
 #ifndef HW_ARM_NIKON_Z63_LENS_H
 #define HW_ARM_NIKON_Z63_LENS_H
 
+#include "nikon-zf-lens-profile.h"
+
 #define Z63_LENS_SIO        3       /* serial instance (0x4117ad38) */
 #define Z63_LENS_RDY_LINE   10      /* pin 41 -> EXT_INT_10 */
 #define Z63_LENS_RDY_WORD   0x00c   /* port 3's data word */
@@ -154,6 +156,8 @@ static const Z63LensReply z63_lens_replies[] = {
 #define Z63_LENS_USER_MAX   32      /* lens-replies= entries */
 
 typedef struct Z63Lens {
+    ZfLensProfile zf_profile;
+    uint64_t profile_frames;
     Z63LensReply user[Z63_LENS_USER_MAX];   /* lens-replies=, first */
     unsigned n_user;
     Z63Sio *sio;
@@ -328,6 +332,10 @@ static void z63_lens_data(Z63Lens *l, unsigned len)
     l->in[0] = 0x55;
     if (r) {
         memcpy(l->in + 1, r->bytes, MIN(r->len, l->len - 2));
+    }
+    if (zf_lens_profile_reply(&l->zf_profile, l->code,
+                              l->in + 1, l->len - 2)) {
+        l->profile_frames++;
     }
     for (unsigned i = 0; i < l->len - 1; i++) {
         sum += l->in[i];

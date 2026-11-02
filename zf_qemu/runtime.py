@@ -20,7 +20,7 @@ LOCAL_IMAGES = frozenset({'snor_user', 'nand'})
 REQUIRED = ('eg', 'loader', 'snor_user', 'li', 'mcu')
 PROFILE = (
     'lens=on',
-    'lens-replies=0x2870:0000000000000000000000000000000000000000500000005050',
+    'zf-lens-settings=50:100',
     'zf-ramdump-zeros=on', 'zf-multi-io-counter=on',
     'zf-sensorif-aux=on', 'zf-sensorif-output-config=on', 'zf-sensorif-group=on',
     'zf-sensorif-primary=on', 'zf-sensorif-source-period-ns=33333333',

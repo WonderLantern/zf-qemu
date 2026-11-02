@@ -31,9 +31,9 @@ DEFAULT_MASK = {0: 53, 2: 119, 5: 61}
 DEFAULT_CODE = {0: 0, 2: 31, 5: 11}
 
 LABELS = {
-    0: ['x 1/200', 'Time', 'Bulb', '1/4000 s', '1/2000 s', '1/1000 s',
+    0: ['1/3 STEP', '1/8000 s', '1/4000 s', '1/2000 s', '1/1000 s',
         '1/500 s', '1/250 s', '1/125 s', '1/60 s', '1/30 s', '1/15 s',
-        '1/8 s', '1/4 s', '1/2 s', '1 s', '2 s', '4 s', '1/8000 s', '1/200 s'],
+        '1/8 s', '1/4 s', '1/2 s', '1 s', '2 s', '4 s', 'B', 'T', 'X'],
     2: ['C', '100', '125', '160', '200', '250', '320', '400', '500', '640',
         '800', '1000', '1250', '1600', '2000', '2500', '3200', '4000', '5000',
         '6400', '8000', '10000', '12800', '16000', '20000', '25600', '32000',
@@ -42,12 +42,14 @@ LABELS = {
 }
 
 # Engraved position (index into LABELS) -> firmware position code.
-# row0: the 19 speed marks are codes 1..19, the '1/3 STEP' stop is the default
-#       (code 0).  row2: 'C' is the default (code 31), the 29 numbered stops run
+# row0: preserve the existing label/contact assignments while ordering the UI
+#       clockwise from STEP. Code 0 is STEP, 19 is 8000, 3/2/1 are B/T/X.
+#       row2: 'C' is the default (code 31), the 29 numbered stops run
 #       codes 0..27 then 30; '512000' has no verified contact code.  row5: the 19
 #       compensation marks are codes 1..19, 'C' is the default mask.
 POSITION_CODE = {
-    0: {i: i + 1 for i in range(19)} | {19: DEFAULT_CODE[0]},
+    0: {0: DEFAULT_CODE[0], 1: 19, 17: 3, 18: 2, 19: 1}
+       | {i: i + 2 for i in range(2, 17)},
     2: {0: DEFAULT_CODE[2]} | {i: (i - 1) if i <= 28 else 30 for i in range(1, 30)},
     5: {i: i + 1 for i in range(19)} | {19: DEFAULT_CODE[5]},
 }

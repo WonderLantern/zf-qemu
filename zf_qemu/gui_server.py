@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 from .sd_upload import add_file as add_sd_file
 from . import retro_dial_positions as retro
+from . import lens
 from .runtime import Configuration
 from .qmp import query as qmp_query
 
@@ -92,6 +93,11 @@ class Session:
         self.log_path = None
         self.fn_held = False
         self.fn_locked = False
+        self.lens_path = CONFIG.state_dir / 'lens-settings.json'
+        try:
+            self.lens_settings = lens.validate(json.loads(self.lens_path.read_text()))
+        except (OSError, ValueError, TypeError, AttributeError):
+            self.lens_settings = dict(lens.DEFAULT)
 
     def _ensure_media(self):
         CONFIG.ensure_media()
@@ -184,6 +190,8 @@ class Session:
                 try:
                     status = self.qmp('query-status')
                     if status.get('running'):
+                        self.qmp('qom-set', {'path': '/machine', 'property': 'zf-lens-settings',
+                                             'value': lens.qom_value(self.lens_settings)})
                         for level in ('1', '0'):
                             self.qmp('qom-set', {'path': '/machine', 'property': 'mcu-pins', 'value': 'C5=' + level})
                             if level == '1': time.sleep(3)
@@ -226,7 +234,8 @@ class Session:
     def snapshot(self):
         # Publish transitions without waiting for the QMP/startup lock. Cache
         # dictionaries are replaced atomically by the capture worker.
-        snapshot = {'run': str(self.run) if self.run else None, **self.cache}
+        snapshot = {'run': str(self.run) if self.run else None, **self.cache,
+                    'lens_settings': dict(self.lens_settings)}
         if self.lifecycle in {'starting', 'stopping', 'failed'}:
             snapshot['status'] = self.lifecycle
             if self.start_error:
@@ -343,6 +352,22 @@ class Session:
         return result, names
 
     def control(self, body):
+        if body.get('kind') == 'lens':
+            settings = lens.validate(body)
+            with self.lock:
+                if self.proc and self.proc.poll() is None:
+                    value = lens.qom_value(settings)
+                    self.qmp('qom-set', {'path': '/machine', 'property': 'zf-lens-settings', 'value': value})
+                    actual = self.qmp('qom-get', {'path': '/machine', 'property': 'zf-lens-settings'})
+                    if actual != value:
+                        raise RuntimeError('镜头输入读回不一致')
+                self.lens_path.parent.mkdir(parents=True, exist_ok=True)
+                temporary = self.lens_path.with_suffix('.tmp')
+                temporary.write_text(json.dumps(settings) + '\n')
+                temporary.replace(self.lens_path)
+                self.lens_settings = settings
+                self.last_state_read = 0
+                return {'accepted': True, 'kind': 'lens', 'settings': settings}
         if not self.proc or self.proc.poll() is not None:
             raise RuntimeError('QEMU is not running')
         kind = body.get('kind')
@@ -542,7 +567,11 @@ class Handler(BaseHTTPRequestHandler):
         return target, file_part.get_filename(), file_part.get_payload(decode=True) or b''
     def do_GET(self):
         if urlparse(self.path).path == '/':
-            raw = (ROOT / 'gui.html').read_bytes(); self.send_response(200); self.send_header('Cache-Control', 'no-store'); self.send_header('Content-Type', 'text/html; charset=utf-8'); self.send_header('Content-Length', str(len(raw))); self.end_headers(); self.wfile.write(raw); return
+            raw = (ROOT / 'gui.html').read_text(encoding='utf-8')
+            raw = raw.replace('__RETRO_LABELS__', json.dumps(retro.LABELS, ensure_ascii=False))
+            raw = raw.replace('__LENS_APERTURES__', json.dumps(lens.APERTURES))
+            raw = raw.encode('utf-8')
+            self.send_response(200); self.send_header('Cache-Control', 'no-store'); self.send_header('Content-Type', 'text/html; charset=utf-8'); self.send_header('Content-Length', str(len(raw))); self.end_headers(); self.wfile.write(raw); return
         if urlparse(self.path).path == '/api/state':
             self.out(S.snapshot())
             return

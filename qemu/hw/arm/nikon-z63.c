@@ -5178,6 +5178,10 @@ static void z63_init(MachineState *machine)
     /* A synthetic lens on serial instance 3 and pins 41/58, powered and
      * detected through the real MCU when there is one (nikon-z63-lens.h). */
     if (s->lens_on) {
+        if (object_dynamic_cast(OBJECT(s), MACHINE_TYPE_NAME("nikon-zf")) &&
+            !s->lens.zf_profile.enabled) {
+            s->lens.zf_profile = (ZfLensProfile) { true, 50, 100 };
+        }
         if (s->sio.kick[Z63_LENS_SIO]) {
             error_report("lens=on: serial instance %u already has a peer",
                          Z63_LENS_SIO);
@@ -7039,15 +7043,39 @@ static char *zf_prop_get_lens_state(Object *obj, Error **errp)
     if (!object_dynamic_cast(obj, MACHINE_TYPE_NAME("nikon-zf"))) {
         error_setg(errp, "zf-lens-state requires Zf"); return NULL;
     }
-    if (!NIKON_Z63(obj)->lens_on) {
-        return g_strdup("{\"enabled\":false,\"profile\":\"50mm f/1\","
-                       "\"focal_length_mm\":50,\"max_aperture\":1,"
-                       "\"status\":\"off\",\"experimental\":true}");
+    NikonZ63State *s = NIKON_Z63(obj);
+    ZfLensProfile p = s->lens.zf_profile.enabled ? s->lens.zf_profile :
+                      (ZfLensProfile) { true, 50, 100 };
+    unsigned focal_code = zf_lens_focal_code(p.focal_mm);
+    return g_strdup_printf("{\"enabled\":%s,\"focal_length_mm\":%u,"
+        "\"aperture_x100\":%u,\"aperture\":%.2f,\"iris\":\"fixed\","
+        "\"focal_code\":%u,\"encoded_focal_mm\":%.3f,\"aperture_code\":%u,"
+        "\"profile_frames\":%" PRIu64 ",\"status\":\"%s\","
+        "\"experimental\":true,\"native_zf_transport\":\"unverified\"}",
+        s->lens_on ? "true" : "false", p.focal_mm, p.aperture_x100,
+        p.aperture_x100 / 100.0, focal_code,
+        5 * pow(2, focal_code / 24.0), zf_lens_aperture_code(p.aperture_x100),
+        s->lens.profile_frames, s->lens_on ? "synthetic-peer" : "off");
+}
+
+static char *zf_prop_get_lens_settings(Object *obj, Error **errp)
+{
+    ZfLensProfile *p = &NIKON_Z63(obj)->lens.zf_profile;
+    return p->enabled ? g_strdup_printf("%u:%u", p->focal_mm, p->aperture_x100)
+                      : g_strdup("50:100");
+}
+
+static void zf_prop_set_lens_settings(Object *obj, const char *value, Error **errp)
+{
+    unsigned focal, aperture;
+    char extra;
+    if (sscanf(value, "%u:%u%c", &focal, &aperture, &extra) != 2 ||
+        !zf_lens_profile_valid(focal, aperture)) {
+        error_setg(errp, "zf-lens-settings: expected focal_mm:aperture_x100; "
+                   "integer focal 6..1200 and a supported aperture f/1..f/16");
+        return;
     }
-    return g_strdup("{\"enabled\":true,\"profile\":\"50mm f/1\","
-                    "\"focal_length_mm\":50,\"max_aperture\":1,"
-                    "\"status\":\"synthetic-peer\",\"experimental\":true,"
-                    "\"native_zf_transport\":\"unverified\"}");
+    NIKON_Z63(obj)->lens.zf_profile = (ZfLensProfile) { true, focal, aperture };
 }
 
 static char *zf_prop_get_toplcd_state(Object *obj, Error **errp)
@@ -7758,8 +7786,13 @@ static void z63_machine_class_init(ObjectClass *oc, const void *data)
     object_class_property_add_str(oc, "zf-lens-state",
                                   zf_prop_get_lens_state, NULL);
     object_class_property_set_description(oc, "zf-lens-state",
-        "Read-only experimental Zf synthetic lens: 50mm f/1; the reused "
+        "Read-only experimental Zf synthetic lens settings and wire counters; the reused "
         "serial peer is not a hardware-qualified Zf lens protocol model");
+    object_class_property_add_str(oc, "zf-lens-settings",
+                                  zf_prop_get_lens_settings, zf_prop_set_lens_settings);
+    object_class_property_set_description(oc, "zf-lens-settings",
+        "Experimental fixed-iris synthetic lens input focal_mm:aperture_x100; "
+        "default 50:100; takes effect on subsequent native lens-data requests");
     object_class_property_add_str(oc, "zf-toplcd-state", zf_prop_get_toplcd_state, NULL);
     object_class_property_set_description(oc, "zf-toplcd-state",
         "Read-only Zf SPI2 segment RAM, two digits/one decimal/unknown auxiliary bit and CS/DISP; no value injection");

@@ -12,6 +12,6 @@ This is an experimental functional model, not a hardware specification or a fait
 | Storage | Two virtual backends, command/data/DMA/IRQ paths, FAT32 file uploads and per-run writable overlays. UHS-II physical behavior and complete dual-card photo policy are unqualified. |
 | Still capture | A bounded synthetic-source JPEG path exists. Repeat capture, recovery, RAW acceptance and all quality/card combinations remain incomplete. |
 | Video | Recording is not qualified or advertised as functional. |
-| Sensor/lens | Fixed 6048 × 4032 Bayer input, generated test chart and user images; functional lens/battery stand-ins. No optical, analog or physical authentication claims. |
+| Sensor/lens | Fixed 6048 × 4032 Bayer input, generated test chart and user images. Synthetic lens input supports 23 fixed-iris choices from f/1 to f/16 and integer focal lengths 6–1200 mm. Live settings enter the serial lens-data reply, with QOM readback and WebUI persistence; focal wire codes are quantized. Lens motor behavior, optics and full native Zf transport compatibility remain unqualified. Battery is also a functional stand-in; no physical authentication claims. |
 
 The public C and Python tests use synthetic data and test selected contracts. Passing them is distinct from guest boot, photograph quality or camera behavior. Consult runtime logs locally when investigating unsupported behavior; do not publish those logs or input files.

@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = (
     "clock-contract.c",
     "gpio22-input-contract.c",
+    "lens-profile-contract.c",
     "matrix-contract.c",
     "pcie-contract.c",
     "ramdump-contract.c",
@@ -25,7 +26,7 @@ def main():
             command = [
                 "cc", "-std=c11", "-O2", "-Wall", "-Wextra",
                 "-Wno-unused-parameter", "-I", str(tests / "include"),
-                str(tests / source), "-o", str(out / name),
+                str(tests / source), "-o", str(out / name), "-lm",
             ]
             subprocess.run(command, check=True)
             subprocess.run([str(out / name)], check=True)

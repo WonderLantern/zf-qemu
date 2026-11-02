@@ -273,6 +273,9 @@
     "hw/arm/nikon-zf-isp1a3-config.h": {
       "upstream_sha256": null
     },
+    "hw/arm/nikon-zf-lens-profile.h": {
+      "upstream_sha256": null
+    },
     "hw/arm/nikon-zf-matrix.h": {
       "upstream_sha256": null
     },
