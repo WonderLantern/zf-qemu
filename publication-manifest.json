@@ -5,11 +5,23 @@
   "private_material_policy": "No firmware, unpacked payloads, dumps, keys, calibration, personal media, runtime logs or research records",
   "upstream_qemu_version": "10.2.4",
   "upstream_qemu_revision": "3e0bcba1ca7d6607ca49a988d165f052a3a53323",
-  "source_roots": ["qemu", "zf_qemu", "tools", "tests", "docs", "LICENSES"],
+  "source_roots": [
+    "qemu",
+    "zf_qemu",
+    "tools",
+    "tests",
+    "docs",
+    "LICENSES"
+  ],
   "license": "GPL-2.0-or-later for Zf-authored code; preserve applicable third-party licenses",
   "build_entrypoint": "tools/build.py",
   "runtime_entrypoint": "python3 -m zf_qemu",
   "input_fingerprints": "zf_qemu/inputs.json",
-  "documentation_images": ["docs/images/webui.png"],
+  "documentation_images": [
+    "docs/images/webui.png",
+    "docs/images/demo-evf-chart.png",
+    "docs/images/demo-lcd-custom.png",
+    "docs/images/demo-lcd-osd.png"
+  ],
   "privacy_check": "tests/check_release_tree.py"
 }

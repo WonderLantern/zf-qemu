@@ -26,9 +26,12 @@ PRIVATE = (
     re.compile(r'(?i)\b(?:boot|run|checkpoint|trial)\d+\b'),
 )
 
-# Reviewed documentation screenshot only; all other binary/media files are rejected.
+# Explicitly reviewed documentation images only; other binary/media files are rejected.
 PUBLIC_IMAGES = {
-    'docs/images/webui.png': '0ef62b3417dcd37f9da23b2e5b2e45126681a69f6fc651f5693dd5babf2d599a',
+    'docs/images/webui.png': '73667930ff8bbf7085bf4cc212ac2058bd1c57c6fb48ce2b95f59db09ff84836',
+    'docs/images/demo-evf-chart.png': 'b62ee8cf264f9155bfd4905588d41d7355642b0d9591e95153b159789a69859a',
+    'docs/images/demo-lcd-custom.png': 'cd7800fd9991da0a40f821043b08da4f282b4660987148055d638375ab4c7c42',
+    'docs/images/demo-lcd-osd.png': '1238654226a1c81c76613abf5119e7da071ded64d6528941bba6496083029191',
 }
 
 

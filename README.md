@@ -6,7 +6,23 @@ An experimental Nikon Zf C3.01 machine model, with a command-line launcher and a
 
 ![Zf QEMU WebUI with the synthetic sensor test chart](docs/images/webui.png)
 
-WebUI example: the synthetic chart enters the sensor model; the guest renders its own controls and overlays. Runtime logs are collapsed in this screenshot.
+WebUI example with adjustable lens inputs (35 mm, f/1.4), the native segment top display, and camera controls. The synthetic chart enters the sensor model; the guest renders its own controls and overlays. Runtime logs are collapsed in this screenshot.
+
+## Display examples
+
+These user-provided emulator display examples show the guest's own overlays. They are display outputs, not sensor input fixtures or photographs captured by a physical camera. The default color bars and checkerboard are generated automatically; no separate image download is needed.
+
+EVF output with the synthetic color-bar/checkerboard input:
+
+![EVF output with color bars, checkerboard and native overlays](docs/images/demo-evf-chart.png)
+
+LCD output with a custom image supplied to the sensor input:
+
+![LCD output with a custom sensor image and native overlays](docs/images/demo-lcd-custom.png)
+
+LCD overlays over a black background (OSD-only example):
+
+![LCD native overlays over a black background](docs/images/demo-lcd-osd.png)
 
 ## Build
 
