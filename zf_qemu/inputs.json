@@ -1,0 +1,6 @@
+{
+  "eg": {"bytes": 79144343, "sha256": "0b53631396314e17e5b5a46a6758a35ae521c1e8bddc2fb59b61bcf72e4889f8"},
+  "loader": {"bytes": 1441792, "sha256": "e32200ad98236a857e69b72a62c097b3e65894f4a36801a66c843b038b13decc"},
+  "li": {"bytes": 27254786, "sha256": "71e098bf2decb893505fec55d97b042c0b064a31a42a270fed645ca5dd0b112e"},
+  "mcu": {"bytes": 524288, "sha256": "3211aabab930bb63baca1faecb6a4e9ff5d569f306f064c6a9c0e4865044bb74"}
+}

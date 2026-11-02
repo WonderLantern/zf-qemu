@@ -1,12 +1,15 @@
 {
-  "schema": 1,
-  "project": "Nikon Zf QEMU Research Model",
-  "layout": "WonderLantern-style source snapshot",
-  "private_material_policy": "No firmware, dumps, keys, calibration data, run outputs, or research plugins",
-  "upstream_qemu_revision": "055b82d29350367f2036f70793a5aa332cf08936",
-  "source_roots": ["qemu", "tools", "tests", "docs", "LICENSES"],
-  "license": "GPL-2.0-or-later for Zf-authored model sources; retain upstream and third-party licenses",
-  "integration_entrypoint": "qemu/prepare_source.py",
+  "schema": 2,
+  "project": "Nikon Zf QEMU",
+  "layout": "maintained model sources over official QEMU; portable shared CLI/WebUI runtime",
+  "private_material_policy": "No firmware, unpacked payloads, dumps, keys, calibration, personal media, runtime logs or research records",
+  "upstream_qemu_version": "10.2.4",
+  "upstream_qemu_revision": "3e0bcba1ca7d6607ca49a988d165f052a3a53323",
+  "source_roots": ["qemu", "zf_qemu", "tools", "tests", "docs", "LICENSES"],
+  "license": "GPL-2.0-or-later for Zf-authored code; preserve applicable third-party licenses",
   "build_entrypoint": "tools/build.py",
+  "runtime_entrypoint": "python3 -m zf_qemu",
+  "input_fingerprints": "zf_qemu/inputs.json",
+  "documentation_images": ["docs/images/webui.png"],
   "privacy_check": "tests/check_release_tree.py"
 }

@@ -1,0 +1,361 @@
+{
+  "upstream": "https://github.com/qemu/qemu.git",
+  "version": "10.2.4",
+  "revision": "3e0bcba1ca7d6607ca49a988d165f052a3a53323",
+  "files": {
+    "configs/devices/aarch64-softmmu/default.mak": {
+      "upstream_sha256": "16c4a9e12081911634685f48eb23a65844c3398e55968ed6d4ec9bd1cb030461"
+    },
+    "hw/arm/Kconfig": {
+      "upstream_sha256": "6d6f2c4fdd8501334c852c12bd2206e6ebe7d03b4c6e2371799cbf252da404cc"
+    },
+    "hw/arm/meson.build": {
+      "upstream_sha256": "5b196b2689158cf9b3921c0f9c4189a6162031b9e72340464a4a044d697fd41d"
+    },
+    "hw/arm/nikon-expeed-capture-pool.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-expeed-correction.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-expeed-dsp-boot.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-expeed-lossless.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-expeed-main-output.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-expeed-motion.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-expeed-programmed-clock.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-expeed-video-preview.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-he-runtime-absent.c": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-he-runtime.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-raw-pixels.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-wave5-codec.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-audio.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-aux.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-blk1524.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-blk15d8.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-blkfam.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-codec.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-dev184.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-dev199.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-dev1cc.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-dev1cf.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-display.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-dsp1b80.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-dsp1c80.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-dspipc.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-dwc3.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-exs1784.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-extint.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-gfx.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-hdmac.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-hdmi.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-i2c.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-imu.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-isp-apb.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-ispband.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-ispfam.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-jpegdec.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-lens.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-mcu.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-mcukeys.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-nand.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-noc.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-nor.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-regwindow.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-scanout.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-sensorif.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-sio.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-spi.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-spibus.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-stm32.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-storage.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-stream154c.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-tdec.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-tenc.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-toplcd.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-touch.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-usb.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-usbhost.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-vpipe-ctl.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-wlsd.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-xdmac.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-yuvcomp.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-z9lab.c": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63-z9lab.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z63.c": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-capture-nv16.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-d980.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-jpeg.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-pcie.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-pixels.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-source-ram.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-thumbnail-nv16.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-video-raw.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-z9-wave5.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-battery-standin.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-clock.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-dbi.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-display3e.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-eye-i2c.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-eye.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-gpio-input.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-isp-small-owner.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-isp192-owner.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-isp199-config.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-isp199-owner.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-isp1a3-config.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-matrix.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-pcie.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-ramdump.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-rng.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-sd-mode3.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-sd.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-sdhci-probe.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-sensorif-aux-config.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-sensorif-group.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-sensorif-output-config.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-sensorif-primary.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-stream154c.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-temperature.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf-toplcd.h": {
+      "upstream_sha256": null
+    },
+    "hw/arm/nikon-zf.c": {
+      "upstream_sha256": null
+    },
+    "hw/intc/arm_gicv3_redist.c": {
+      "upstream_sha256": "d8b291374bc16c87ac09a6485aa470a039d688c2cdd9101d62e4b77c1b344731"
+    },
+    "hw/misc/stm32f4xx_exti.c": {
+      "upstream_sha256": "d0ac074ba3531954dfee8b8727230394e5b1f11abf677eed25569524c5749c1f"
+    },
+    "hw/pci-host/designware.c": {
+      "upstream_sha256": "4d5193d4352a728b9f47ad094c5299e0911bace8e1b4c6da1190aa1eccf0b0cd"
+    },
+    "hw/sd/sd.c": {
+      "upstream_sha256": "237c29a36cb2fee6ae57aab700c4c4772a4b6c9455268ade83a1ec2be0ccbbc7"
+    },
+    "hw/sd/sdhci-pci.c": {
+      "upstream_sha256": "d80b778c11ff3ce03e4f2b80ac7c33fa0883292dce632162d9afd0fa2d701f77"
+    },
+    "hw/timer/stm32f2xx_timer.c": {
+      "upstream_sha256": "622413aa81ea76a0c1ae99edcdb7993b5c7c962fefc6ab761d83823d71077cb6"
+    },
+    "include/hw/pci-host/designware.h": {
+      "upstream_sha256": "2b9fa3e96d0d54d1b2db3915d33684c61ff28cd15f86a6f452e5a30817e149e9"
+    },
+    "include/hw/timer/stm32f2xx_timer.h": {
+      "upstream_sha256": "dbeec8f54232b7c5014466912252c449323018b5a98951750d8d1ca48dc5f411"
+    },
+    "target/arm/cpu.h": {
+      "upstream_sha256": "fb19c187ea418c26d3d13acd996673ea5e2df92c639306bc0a7124fac923c91c"
+    },
+    "target/arm/tcg/a64.decode": {
+      "upstream_sha256": "8b7ea3ad76d4a71c2a283b1cc778bc69cbe0fa0eeb59060cbabffb0d9452c5f6"
+    },
+    "target/arm/tcg/helper.h": {
+      "upstream_sha256": "1d8f0764b81a805f73500b7cb140176e20505dc362a1d87be3b46c3adfc67f2f"
+    },
+    "target/arm/tcg/op_helper.c": {
+      "upstream_sha256": "8e83606e52e74bb358e17c5a44c6d20740af9f695ee78cbcdfa46853fd0abecc"
+    },
+    "target/arm/tcg/translate-a64.c": {
+      "upstream_sha256": "1599b46ff223457abf637abc871b6f9311425d31cd7528ddc90c79807fd1af56"
+    }
+  }
+}

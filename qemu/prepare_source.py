@@ -1,71 +1,57 @@
 #!/usr/bin/env python3
-"""Integrate the Zf source snapshot into a local QEMU checkout."""
+"""Install maintained model sources over the pinned official QEMU checkout."""
 import argparse
+import hashlib
+import json
 from pathlib import Path
-import re
-import shutil
 import subprocess
 
+ROOT = Path(__file__).resolve().parent
 
-ROOT = Path(__file__).resolve().parents[1]
 
-def normalize_imported_comments(source):
-    for relative in (
-        "hw/arm/nikon-z63-z9lab.c",
-        "hw/arm/nikon-z63-gfx.h",
-        "hw/arm/nikon-z63.c",
-        "hw/arm/nikon-zf-sd-mode3.h",
-        "hw/arm/nikon-z9-pcie.h",
-    ):
-        path = source / relative
-        if not path.is_file():
-            continue
-        data = path.read_bytes()
-        text = data.decode("utf-8")
-        text = re.sub(r"\brun\d+\b", "native observation", text, flags=re.IGNORECASE)
-        text = re.sub(r"\bcheckpoint\d+/trial\d+\b", "native variant", text, flags=re.IGNORECASE)
-        text = re.sub(r"\breports/[^\s*]+", "captured translation tables", text)
-        text = re.sub(r"\b[^\s/]+-\d{8}\.md\b", "the native extension notes", text)
-        text = re.sub(r", sha256 [0-9a-f]{64}", "", text, flags=re.IGNORECASE)
-        text = text.replace("Fingerprints identify local programs", "Fingerprints identify compatible programs")
-        data = text.encode("utf-8")
-        path.write_bytes(data)
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+
+
+def prepare(source):
+    source = Path(source).resolve()
+    manifest = json.loads((ROOT / 'source-manifest.json').read_text())
+    revision = subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip()
+    if revision != manifest['revision']:
+        raise ValueError(f'Expected official QEMU {manifest["version"]} ({manifest["revision"]}), got {revision}')
+    marker = Path(subprocess.check_output(['git', '-C', str(source), 'rev-parse', '--git-path',
+                                          'zf-installed.json'], text=True).strip())
+    if not marker.is_absolute():
+        marker = source / marker
+    previous = json.loads(marker.read_text()) if marker.exists() else {}
+    intended = {}
+    for relative, record in manifest['files'].items():
+        destination = source / relative
+        current = sha(destination)
+        desired = sha(ROOT / relative)
+        if desired is None:
+            raise ValueError(f'Missing model source: {relative}')
+        if current not in (record['upstream_sha256'], previous.get(relative), desired):
+            raise ValueError(f'Preserving local QEMU edits in {relative}; edit the maintained qemu/ source or use a clean checkout')
+        intended[relative] = desired
+    for relative in intended:
+        destination = source / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if sha(destination) != intended[relative]:
+            destination.write_bytes((ROOT / relative).read_bytes())
+    marker.write_text(json.dumps(intended, indent=2) + '\n')
+    print(f'Integrated {len(intended)} maintained source files (no patch generators).')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("source", type=Path, help="clean local QEMU source tree")
+    parser.add_argument('source', type=Path)
     args = parser.parse_args()
-    source = args.source.resolve()
-    if not (source / "configure").is_file() or not (source / "hw/arm/meson.build").is_file():
-        parser.error("source must be a QEMU checkout")
-    if not (source / ".git").exists():
-        parser.error("source must be a Git checkout so its revision can be checked")
-    revision = subprocess.run(
-        ["git", "-C", str(source), "rev-parse", "HEAD"],
-        check=True, text=True, capture_output=True,
-    ).stdout.strip()
-    expected = (ROOT / "qemu/UPSTREAM_REVISION").read_text().strip()
-    if revision != expected:
-        parser.error(f"expected QEMU revision {expected}, got {revision}")
-    status = subprocess.run(
-        ["git", "-C", str(source), "status", "--porcelain"],
-        check=True, text=True, capture_output=True,
-    ).stdout.strip()
-    if status:
-        parser.error("QEMU source tree must be clean before integration")
-    normalize_imported_comments(source)
-    patches = sorted((ROOT / "qemu/patches").glob("*.patch"))
-    for patch in patches:
-        subprocess.run(["git", "-C", str(source), "apply", "--check", str(patch)], check=True)
-    for patch in patches:
-        subprocess.run(["git", "-C", str(source), "apply", str(patch)], check=True)
-    for overlay in sorted((ROOT / "qemu").glob("nikon-zf-*")):
-        if overlay.suffix in {".h", ".inc", ".c"}:
-            shutil.copy2(overlay, source / "hw/arm" / overlay.name)
-    shutil.copy2(ROOT / "qemu" / "nikon-zf.c", source / "hw/arm" / "nikon-zf.c")
-    print(f"Integrated {len(patches)} source patches and Zf board files into {source}")
+    try:
+        prepare(args.source)
+    except (ValueError, OSError, subprocess.CalledProcessError) as exc:
+        parser.exit(1, f'{exc}\n')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

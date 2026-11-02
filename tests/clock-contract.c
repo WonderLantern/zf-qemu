@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <stdio.h>
-#include "../qemu/nikon-zf-clock.h"
+#include "../qemu/hw/arm/nikon-zf-clock.h"
 int main(void)
 {
     uint32_t h,p1,p2;

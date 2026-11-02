@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 #include <assert.h>
 #include <stdio.h>
-#include "../qemu/nikon-zf-gpio-input.h"
+#include "../qemu/hw/arm/nikon-zf-gpio-input.h"
 int main(void)
 {
     const uint64_t offsets[] = {0, 0x54, 0x58, 0x5c, 0x158, UINT64_MAX};

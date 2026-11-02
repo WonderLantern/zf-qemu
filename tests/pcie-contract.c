@@ -4,7 +4,7 @@
 #include <stdio.h>
 typedef int *qemu_irq;
 static void qemu_set_irq(qemu_irq irq, int level) { if (irq) *irq = level; }
-#include "../qemu/nikon-zf-pcie.h"
+#include "../qemu/hw/arm/nikon-zf-pcie.h"
 int main(void)
 {
     ZfPcieConfig s = {0};

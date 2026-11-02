@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 #include <assert.h>
 #include <stdio.h>
-#include "../qemu/nikon-zf-ramdump.h"
+#include "../qemu/hw/arm/nikon-zf-ramdump.h"
 
 int main(void)
 {

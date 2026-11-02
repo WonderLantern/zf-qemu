@@ -1,0 +1,11 @@
+{
+  "qemu": "/path/to/build/qemu-system-aarch64",
+  "inputs": {
+    "eg": "/path/to/inputs/eg",
+    "loader": "/path/to/inputs/loader",
+    "snor_user": "/path/to/inputs/snor-user",
+    "li": "/path/to/inputs/li",
+    "mcu": "/path/to/inputs/ex"
+  },
+  "state_dir": "/path/to/state"
+}

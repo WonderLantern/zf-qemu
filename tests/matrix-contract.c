@@ -2,10 +2,10 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <stdio.h>
-#include "../qemu/nikon-zf-matrix.h"
+#include "../qemu/hw/arm/nikon-zf-matrix.h"
 int main(void)
 {
-    /* Original boot65 GPIOF mode/pull: PF1 output, PF10 input/up.
+    /* Native GPIOF mode/pull: PF1 output, PF10 input/up.
      * Exactly the selected row may pull the MENU column low; simply
      * closing a button must not make all six scan rows report it.
      */

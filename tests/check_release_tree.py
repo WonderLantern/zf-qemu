@@ -1,68 +1,82 @@
 #!/usr/bin/env python3
-"""Reject common private inputs, local paths, and key material in release trees."""
+"""Scan public source trees or extracted release archives for private artifacts."""
 from pathlib import Path
+import hashlib
 import re
 import sys
 
-
-FORBIDDEN_SUFFIXES = {
-    ".bin", ".img", ".raw", ".qcow2", ".dump", ".rom", ".elf", ".so",
-    ".ppm", ".png", ".jpg", ".jpeg", ".nef", ".mov", ".mp4", ".log",
+FORBIDDEN = {
+    '.bin', '.img', '.raw', '.qcow2', '.dump', '.rom', '.elf', '.so', '.exe',
+    '.ppm', '.png', '.jpg', '.jpeg', '.nef', '.mov', '.mp4', '.log', '.jsonl',
+    '.candidate', '.payload', '.nz9raw', '.zip', '.7z', '.gz', '.xz', '.tar',
 }
-PATH_PATTERNS = (
-    re.compile(r"(?i)[a-z]:[/\\](?:users|nikon-firmware|codexscratch)[/\\]"),
-    re.compile(r"(?i)(?:/home/[^/\s]+/|/mnt/[a-z]/nikon-firmware/)"),
-    re.compile(r"(?i)EX-flash-[^\s'\"]+\.bin|nand\.img|SNOR_USER[^\s'\"]*\.bin"),
-)
-KEY_PATTERNS = (
-    re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"),
-    re.compile(r"(?i)(?:private[_ -]?key|secret[_ -]?key)\s*[:=]\s*['\"]?[A-Za-z0-9+/]{24,}"),
-)
-RESEARCH_MARKER_PATTERNS = (
-    re.compile(r"(?i)\b(?:run|checkpoint|trial)\d+\b"),
-    re.compile(r"(?i)(?:reports|notes)/[^\s'\"]+"),
-    re.compile(r"(?i)\b[a-z0-9_-]+-20\d{6,8}\.md\b"),
+TOP_LEVEL = {
+    '.gitignore', 'AGENTS.md', 'COPYING', 'LICENSES', 'NOTICE.md', 'README.md',
+    'docs', 'publication-manifest.json', 'qemu', 'tests', 'tools', 'zf_qemu',
+    'config.example.json', 'requirements.txt',
+}
+PRIVATE = (
+    re.compile(r'(?i)\b[a-z]:[/\\](?:users|nikon-firmware|codexscratch)[/\\]'),
+    re.compile(r'(?i)/home/[^/\s]+/|/mnt/[a-z]/(?:users|nikon-firmware)/'),
+    re.compile(r'-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'),
+    re.compile(r'(?i)(?:private[_ -]?key|secret[_ -]?key)\s*[:=]\s*[\x22\x27]?[A-Za-z0-9+/]{24,}'),
+    re.compile(r'(?i)\b(?:gh[pousr]_[a-z0-9]{25,}|github_pat_[a-z0-9_]{25,})\b'),
+    re.compile(r'(?i)(?:reports|notes)/[^\s\x22\x27]+'),
+    re.compile(r'(?i)\b[a-z0-9_-]+-20\d{6,8}\.md\b'),
+    re.compile(r'(?i)\b(?:boot|run|checkpoint|trial)\d+\b'),
 )
 
+# Reviewed documentation screenshot only; all other binary/media files are rejected.
+PUBLIC_IMAGES = {
+    'docs/images/webui.png': '0ef62b3417dcd37f9da23b2e5b2e45126681a69f6fc651f5693dd5babf2d599a',
+}
 
-def main():
-    root = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
+
+def scan(root):
     errors = []
-    for path in sorted(root.rglob("*")):
-        if "__pycache__" in path.parts:
-            errors.append(f"generated Python cache must not be published: {path.relative_to(root)}")
+    for path in sorted(root.rglob('*')):
+        rel = path.relative_to(root)
+        if rel.parts[0] in {'.git', '.cache', '.venv'} or '__pycache__' in rel.parts:
+            continue
+        if path.is_symlink():
+            errors.append(f'symlink: {rel}')
             continue
         if not path.is_file():
             continue
-        rel = path.relative_to(root)
-        if rel.parts[0] == "plugins":
-            errors.append(f"research plugin source must not be published: {rel}")
+        if rel.parts[0] not in TOP_LEVEL:
+            errors.append(f'unexpected release path: {rel}')
+        if rel.as_posix() in PUBLIC_IMAGES:
+            if hashlib.sha256(path.read_bytes()).hexdigest() != PUBLIC_IMAGES[rel.as_posix()]:
+                errors.append(f'unreviewed documentation image: {rel}')
             continue
-        if rel.as_posix() == "tests/check_release_tree.py":
+        if path.suffix.lower() in FORBIDDEN:
+            errors.append(f'forbidden artifact: {rel}')
             continue
-        if path.suffix.lower() in FORBIDDEN_SUFFIXES:
-            errors.append(f"forbidden artifact extension: {rel}")
+        if path.stat().st_size > 8 * 1024**2:
+            errors.append(f'unexpected large source file: {rel}')
             continue
         try:
-            text = path.read_text(encoding="utf-8")
-        except (UnicodeDecodeError, OSError):
-            errors.append(f"non-text file: {rel}")
+            text = path.read_text(encoding='utf-8')
+        except (UnicodeError, OSError):
+            errors.append(f'non-text file: {rel}')
             continue
-        for line_number, line in enumerate(text.splitlines(), 1):
-            if any(pattern.search(line) for pattern in PATH_PATTERNS):
-                errors.append(f"private path: {rel}:{line_number}")
-            if any(pattern.search(line) for pattern in KEY_PATTERNS):
-                errors.append(f"key-like material: {rel}:{line_number}")
-            if rel.as_posix() != "qemu/prepare_source.py" and any(
-                pattern.search(line) for pattern in RESEARCH_MARKER_PATTERNS
-            ):
-                errors.append(f"specific research batch marker: {rel}:{line_number}")
+        if '\0' in text:
+            errors.append(f'binary content: {rel}')
+        if rel.as_posix() in {'tests/check_release_tree.py', 'tests/test_release_tree.py'}:
+            continue
+        for index, line in enumerate(text.splitlines(), 1):
+            if any(pattern.search(line) for pattern in PRIVATE):
+                errors.append(f'possible private material: {rel}:{index}')
+    return errors
+
+
+def main():
+    errors = scan(Path(sys.argv[1] if len(sys.argv) > 1 else '.').resolve())
     if errors:
-        print("FAIL: release-tree scan found possible private material")
-        print("\n".join(errors))
+        print('FAIL: release privacy scan\n' + '\n'.join(errors))
         raise SystemExit(1)
-    print("PASS: no forbidden artifacts, common private paths, or key markers found")
+    print('PASS: source-only release privacy scan')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

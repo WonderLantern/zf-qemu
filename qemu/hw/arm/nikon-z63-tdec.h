@@ -1,0 +1,78 @@
+/*
+ * Nikon Z 6III -- the TDEC block at 0x15300000, and its second window at
+ * 0x15b00000.
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * Device 0x1fa, TENC's sibling (nikon-z63-tenc.h). Its init, sub_40C30394,
+ * builds the descriptor at 0xa02dc5a70 = {0x1fa, 0x15300000, 0x15b00000}
+ * and installs the handler sub_40C30400 on INTID 0x10c -- TDEC in this
+ * image's interrupt-name table (Z63_SPI_TDEC). Reached right after TENC
+ * when the live view restarts in movie mode: reset route 0x15 is pulsed
+ * (sub_40C30434) and sub_40C305D8 initialises the block (pc 0x40c305e4,
+ * +0x404). The driver, 0x40c30394-0x40c30a44, is TENC's almost line for
+ * line; what the pair does is not known, the names are the image's.
+ *
+ * The register set, from `eg2010_0200i1.bi` (md5
+ * b024ec7148e24ec0493e27d4d0f20b0e) read through `z63_eg.elf` (md5
+ * 0fedcc0523da1dac8127a8010ccf978b):
+ *
+ *   - 39 offsets from z63-tools/make_window.py (descriptor base at +8);
+ *   - added by hand: +0x120..+0x15c, +0x220..+0x25c, +0x320..+0x35c, the
+ *     loop-indexed address/high-nibble pairs of sub_40C307C0 (+ 32 * bank
+ *     + 8 * i); +0x500..+0x524, the two five-word groups the helper
+ *     sub_40C306C4 fills through a pointer (sub_40C3068C: +0x500,
+ *     sub_40C30720: +0x514); +0x400 and +0x414, read by sub_40C309CC;
+ *   - the second window, the descriptor's +0x10 base 0x15b00000: +0x38
+ *     (start), and what sub_40C308E8 writes and sub_40C309CC reads back:
+ *     +0x14 +0x1c +0x2c +0x3c +0x44 +0x48 +0x4c +0x58 +0x84 +0xa0..+0xac
+ *     +0x100 +0x11c +0x120.
+ *
+ * The handler reads +0x1c, writes it back (W1C; mask +0x18) and calls the
+ * client with "(status & 0x700) != 0", as TENC's does.
+ *
+ * What is a declared choice: storage throughout. The offsets the firmware
+ * only reads answer their reset value, 0; nothing here raises the
+ * interrupt or produces anything.
+ *
+ * An offset not in these sets still stops the machine with its PC.
+ */
+
+#ifndef HW_ARM_NIKON_Z63_TDEC_H
+#define HW_ARM_NIKON_Z63_TDEC_H
+
+#define Z63_TDEC_BASE    0x15300000ULL
+#define Z63_TDEC_SIZE    0x1000
+#define Z63_TDEC2_BASE   0x15b00000ULL
+#define Z63_TDEC2_SIZE   0x1000
+
+static const uint16_t z63_tdec_offsets[] = {
+    0x0000, 0x0004, 0x0008, 0x000c, 0x0014, 0x0018, 0x001c, 0x0100,
+    0x0104, 0x0108, 0x010c, 0x0110, 0x0114, 0x0118,
+    0x0120, 0x0124, 0x0128, 0x012c, 0x0130, 0x0134, 0x0138, 0x013c,
+    0x0140, 0x0144, 0x0148, 0x014c, 0x0150, 0x0154, 0x0158, 0x015c,
+    0x0160, 0x0164, 0x0170, 0x0174, 0x0178, 0x017c,
+    0x0220, 0x0224, 0x0228, 0x022c, 0x0230, 0x0234, 0x0238, 0x023c,
+    0x0240, 0x0244, 0x0248, 0x024c, 0x0250, 0x0254, 0x0258, 0x025c,
+    0x0270, 0x0274, 0x0278, 0x027c,
+    0x0320, 0x0324, 0x0328, 0x032c, 0x0330, 0x0334, 0x0338, 0x033c,
+    0x0340, 0x0344, 0x0348, 0x034c, 0x0350, 0x0354, 0x0358, 0x035c,
+    0x0370, 0x0374, 0x0378, 0x037c, 0x0400, 0x0404, 0x0414,
+    0x0500, 0x0504, 0x0508, 0x050c, 0x0510,
+    0x0514, 0x0518, 0x051c, 0x0520, 0x0524, 0x0528, 0x052c,
+    0x0530, 0x0534, 0x0544, 0x0548, 0x054c, 0x0550, 0x0554, 0x0558,
+};
+
+/* Only ever read by the firmware -- the declared choice above. */
+static const uint16_t z63_tdec_status_offsets[] = {
+    0x0160, 0x0164, 0x0170, 0x0174, 0x0178, 0x017c, 0x0270, 0x0274,
+    0x0278, 0x027c, 0x0370, 0x0374, 0x0378, 0x037c, 0x0400, 0x0414,
+};
+
+static const uint16_t z63_tdec2_offsets[] = {
+    0x0014, 0x001c, 0x002c, 0x0038, 0x003c, 0x0044, 0x0048, 0x004c,
+    0x0058, 0x0084, 0x00a0, 0x00a4, 0x00a8, 0x00ac, 0x0100, 0x011c,
+    0x0120,
+};
+
+#endif /* HW_ARM_NIKON_Z63_TDEC_H */

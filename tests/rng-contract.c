@@ -48,7 +48,7 @@ static void memory_region_add_subregion(MemoryRegion *m,hwaddr base,MemoryRegion
 void qemu_guest_getrandom_nofail(void *p,size_t n) {
     uint32_t word=0xa5000000+(++entropy_calls); assert(n==4); memcpy(p,&word,4);
 }
-#include "../qemu/nikon-zf-rng.h"
+#include "../qemu/hw/arm/nikon-zf-rng.h"
 static void advance(ZfRng *s,int64_t n) {
     now=n; if(s->timer->pending && s->timer->due<=now) {
         s->timer->pending=false; s->timer->cb(s);
